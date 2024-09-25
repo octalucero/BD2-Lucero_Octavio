@@ -1,0 +1,46 @@
+ 1#
+
+mysql> create user "data_analyst"@"localhost" identified by "123456";
+Query OK, 0 rows affected (0.00 sec)
+
+#2
+mysql> grant select, update, delete on sakila.* to "data_analyst"@"localhost";
+Query OK, 0 rows affected, 1 warning (0.04 sec)
+
+mysql> exit
+Bye
+
+
+octalucero@octalucero-HP-240-G7-Notebook-PC:~$ docker exec -it sakila mysql -u data_analyst -p
+Enter password: 
+
+
+mysql> use sakila
+
+#3
+mysql> create table test_table (id int);
+ERROR 1142 (42000): CREATE command denied to user 'data_analyst'@'localhost' for table 'test_table'
+
+#4
+mysql> update sakila.film set title = "Dallas Buyers Club" where film_id = 1;
+Query OK, 1 row affected (0.21 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> exit
+Bye
+
+octalucero@octalucero-HP-240-G7-Notebook-PC:~$ sudo docker exec -it sakila mysql -u root -p
+
+#5
+mysql> revoke update on sakila.* from 'data_analyst'@'localhost';
+Query OK, 0 rows affected, 1 warning (0.01 sec)
+
+mysql> exit
+
+
+octalucero@octalucero-HP-240-G7-Notebook-PC:~$ sudo docker exec -it sakila mysql -u data_analyst -p
+
+#6
+mysql> update sakila.film set title = 'Star Wars' WHERE film_id = 1;
+ERROR 1142 (42000): UPDATE command denied to user 'data_analyst'@'localhost' for table 'film'
+
